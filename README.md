@@ -6,7 +6,7 @@ PeptoVar - Peptides of Variations
 
 PeptoVar is a program for personalization of protein coding genes and peptidomes generation.
 
- - Easy to use. (see *Usage* section) 
+ - Easy to use (see *Usage* section) 
  
  - Generate peptidomes:
    - personalized for selected sample
@@ -14,9 +14,9 @@ PeptoVar is a program for personalization of protein coding genes and peptidomes
    - all possible peptides for variations in population
    - *... multi-processing version will be available soon*
 
-- Efficiently remove synonymous variations.
+- Efficiently remove synonymous variations
 
-- Has optional parameters for variation filtration and transcript selection.
+- Has optional parameters for variation filtration and transcript selection
 
 
 ## Installation / Download
