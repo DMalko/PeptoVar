@@ -1,9 +1,10 @@
 # PeptoVar
 
+PeptoVar - Peptides of Variations
 
 ## Overview
 
-PeptoVar - Peptides of Variations: program for personalization of protein coding genes and peptidomes generation.
+PeptoVar is a program for personalization of protein coding genes and peptidomes generation.
 
  - Easy to use. (see *Usage* section) 
  
