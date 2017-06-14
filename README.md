@@ -30,7 +30,7 @@ to upgrade already installed PeptoVar to the newest version:
     brew update
     brew upgrade PeptoVar
 
-#### Manual install (any OS)
+#### Manual install
 
 * download latest stable PeptoVar build from [release page](https://github.com/DMalko/PeptoVar/releases/latest)
 * unzip the archive
