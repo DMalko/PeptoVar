@@ -100,7 +100,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## Cite
 
-has not puplished yet
+has not published yet
 
 ## Files referenced in original paper
 
