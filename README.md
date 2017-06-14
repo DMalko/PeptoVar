@@ -25,7 +25,7 @@ PeptoVar is a program for personalization of protein coding genes and peptidomes
 
     *... will be available soon*
     
-to upgrade already installed MiXCR to the newest version:
+to upgrade already installed PeptoVar to the newest version:
 
     brew update
     brew upgrade PeptoVar
