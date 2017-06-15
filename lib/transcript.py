@@ -163,8 +163,6 @@ class Transcript:
                 return next_nodes # the node is not in the sample path
             for node2 in node1.getNext(sample): # the second nucleotide
                 for node3 in node2.getNext(sample): # the third nucleotide
-                    if node1.pos == 152312604 or node2.pos == 152312604 or node3.pos == 152312604:
-                        ddd=1
                     node1.attachPrefix(CodonEmptyPrefix(sample, node1))
                     node2.attachPrefix(CodonPrefix(sample, [node1]))
                     node3.attachPrefix(CodonPrefix(sample, [node1, node2]))
@@ -191,8 +189,6 @@ class Transcript:
     
     def translateVariations(self):
         for var in self._variations:
-            if var.id == 'rs558269137':
-                ddd=1
             beg_vertebra = var.beg_vertebra
             end_vertebra = var.end_vertebra.getNext()
             for allele in var.snp.getSampleAlleles():
