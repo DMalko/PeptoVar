@@ -70,8 +70,6 @@ class Sequence:
             self._refseq.append(Seq(strand, beg, end, seq))
     
     def modify(self, snp):
-        if snp.id == 'rs139293':
-            ddd=1
         for sample in self.samples:
             for allele in snp.getSampleAlleles(sample):
                 if allele.isReference():
