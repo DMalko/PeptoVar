@@ -102,8 +102,6 @@ class TrnVariation:
                         self._nonsyn_alleles[best_allele_id] = self._alleles[best_allele_id]
                         self._nonsyn_alleles[best_allele_id][0].allele.setNonSyn()
                     for node in self.beg_vertebra.getNodes():
-                        if node.pos == 152312604:
-                            ddd=1
                         for allele in node.getAlleles():
                             if allele.isPhased() or allele.id == best_allele_id:
                                 node.appendPrefixSeq(prefix_seq)
