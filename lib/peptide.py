@@ -106,9 +106,6 @@ class PeptideDriver:
     def appendNode(self, node):
         if self._len is not None:
             pos = node.getPos()
-            
-            if pos['pos'] == 152312632 or pos['pos'] == 152312629:
-                ddd=1
             # peptide position is determined as a "variation shadow" on the genome sequence
             if self._loc_pos == 0:
                 self._start_node = node
