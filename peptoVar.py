@@ -23,7 +23,7 @@ from lib.comparator import UniPep
 # -trnlist transcript:ENST00000368799 -samples HG00242 NA20588 -peptlen 9 -var nonsyn -gff ./ensembl1/chr1.gff3 -vcf ./ensembl1/chr1.vcf.gz -fasta ./ensembl1/chr1.fa
 # -samples T00001 T00002 -peptlen 9 -var nonsyn -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
 
-DEBUG = 1
+DEBUG = 0
 if DEBUG:
     from lib.seqmod import Sequence
 
@@ -160,9 +160,6 @@ def main():
                         exit()
                     else:
                         if snp.filterAF(min_af):
-                            if snp.id == 'rs11577579':
-                                ddd=1
-                            
                             if DEBUG:
                                 debugseq.modify(snp)
                             exon.modify(snp)
