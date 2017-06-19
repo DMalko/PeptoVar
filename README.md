@@ -1,8 +1,8 @@
 # PeptoVar
 
-PeptoVar - Peptides of Variations
+PeptoVar - **Pept**ides **o**f **Var**iations
 
-## Overview
+## Overviewnokia n86
 
 PeptoVar is a program for personalization of protein coding genes and peptidomes generation.
 
