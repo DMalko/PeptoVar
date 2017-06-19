@@ -2,7 +2,7 @@
 
 PeptoVar - **Pept**ides **o**f **Var**iations
 
-## Overviewnokia n86
+## Overview
 
 PeptoVar is a program for personalization of protein coding genes and peptidomes generation.
 
@@ -41,9 +41,10 @@ to upgrade already installed PeptoVar to the newest version:
 #### Requirements
 
 * Linux or MacOS
+* python >= 3.5
+* pysam module >= 0.11.2.2
  
 ## Usage
-
 
 #### Peptidome for a sample
 
@@ -51,6 +52,18 @@ PeptoVar is equally effective in peptide generation from ... . This example illu
 
     peptoVar -samples T00001 -peptlen 9 -var nonsyn -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
 
+
+#### Unique peptidomes for a pair of samples
+This example illustrates usage for the pair of samples S00001 and S00002:
+
+    peptoVar -samples S00001 S00002 -peptlen 9 -var nonsyn -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
+
+
+#### Peptidome generation using all possible variations in the population
+This example illustrates usage virtual sample with all variations:
+
+    peptoVar -peptlen 9 -var nonsyn -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
+    
 
 ## Documentation
 
@@ -62,7 +75,7 @@ If you haven't found the answer to your question in the docs, or have any sugges
 
 Dependancy:
 
-- python3, pysam module
+- pysam module
 
 To build PeptoVar from source:
 
@@ -96,7 +109,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program.  If not, see [http://www.gnu.org/licenses/](http://www.gnu.org/licenses/).
 
 ## Cite
 
