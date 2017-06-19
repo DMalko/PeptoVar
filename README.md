@@ -46,20 +46,20 @@ to upgrade already installed PeptoVar to the newest version:
  
 ## Usage
 
-#### Peptidome for a sample
+#### Peptides for a sample
 
-PeptoVar is equally effective in peptide generation from ... . This example illustrates usage for sample T00001:
+This example illustrates usage for sample S00001:
 
-    peptoVar -samples T00001 -peptlen 9 -var nonsyn -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
+    peptoVar -samples S00001 -peptlen 9 -var nonsyn -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
 
 
-#### Unique peptidomes for a pair of samples
+#### Unique peptides for a pair of samples
 This example illustrates usage for the pair of samples S00001 and S00002:
 
     peptoVar -samples S00001 S00002 -peptlen 9 -var nonsyn -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
 
 
-#### Peptidome generation using all possible variations in the population
+#### Generation of peptides using all possible variations in the set
 This example illustrates usage virtual sample with all variations:
 
     peptoVar -peptlen 9 -var nonsyn -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
