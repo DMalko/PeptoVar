@@ -81,8 +81,8 @@ This example illustrates usage virtual sample with all variations:
 
 Detailed documentation can be found at https://...
 
-If you haven't found the answer to your question in the docs, or have any suggestions concerning new features, feel free to create an issue here, on GitHub, or write an email to dmitry.malko at gmail.com:
-![mymail](https://user-images.githubusercontent.com/5543031/28415000-8bea641e-6d56-11e7-85ca-4287500a4192.png)
+If you haven't found the answer to your question in the docs, or have any suggestions concerning new features, feel free to create an issue here, on GitHub, or write an email to dmitry.malko at gmail.com:<br />
+![my mail](https://user-images.githubusercontent.com/5543031/28415000-8bea641e-6d56-11e7-85ca-4287500a4192.png)
 
 ## Build
 
@@ -108,7 +108,7 @@ To build PeptoVar from source:
 
 
 ## License
-Copyright (c) 2017, Dmitry Malko
+Copyright (c) 2017, D. Malko
 All Rights Reserved
 
 PeptoVar is free software: you can redistribute it and/or modify
