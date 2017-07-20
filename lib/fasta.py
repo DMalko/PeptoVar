@@ -1,5 +1,21 @@
 #!/usr/bin/env python3
 
+# Copyright (C) 2017 D. Malko
+# This file is part of PeptoVar (Peptides on Variations): the program for personalization of protein coding genes and peptidomes generation.
+#
+# PeptoVar is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# PeptoVar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PeptoVar.  If not, see <http://www.gnu.org/licenses/>.
+
 import re
 import os
 import random
@@ -43,8 +59,11 @@ class Fasta:
         self._seq = {}
         self._tmp = tmp_dir
     
-    def appendSeq(self, file):
-        file = open(file, 'r')
+    def appendSeq(self, file_name):
+        try:
+            file = open(file_name, 'r')
+        except:
+            raise ValueError("can't open file: {}".format(file_name))
         pos = 0
         seq_id = ''
         for line in file:
@@ -53,15 +72,17 @@ class Fasta:
             if re_header:
                 seq_id = re_header.group(1)
             else:
-                print("ERROR: wrong format of sequence file")
-                exit()
+                raise ValueError("wrong format of sequence file")
             break
         seq = Seq(seq_id, self._tmp)
         seq.set(file, pos)
         self._seq[seq_id] = seq
     
-    def appendFasta(self, file, pos = 0):
-        file = open(file, 'r')
+    def appendFasta(self, file_name, pos = 0):
+        try:
+            file = open(file_name, 'r')
+        except:
+            raise ValueError("can't open file: {}".format(file_name))
         file.seek(pos)
         seq = None
         hdr_pattern = re.compile('>(\S+)')
@@ -76,7 +97,7 @@ class Fasta:
                     seq = Seq(seq_id, self._tmp)
                     self._seq[seq_id] = seq
                 else:
-                    sys.exit("ERROR: wrong FASTA file format (line in FASTA: {} )\n".format(n))
+                    raise ValueError("wrong FASTA file format (line {} )".format(n))
             elif seq:
                 seq.append(line.strip())
         if seq:

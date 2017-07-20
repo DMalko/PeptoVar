@@ -1,5 +1,21 @@
 #!/usr/bin/env python3
 
+# Copyright (C) 2017 D. Malko
+# This file is part of PeptoVar (Peptides on Variations): the program for personalization of protein coding genes and peptidomes generation.
+#
+# PeptoVar is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# PeptoVar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PeptoVar.  If not, see <http://www.gnu.org/licenses/>.
+
 import errno
 import os
 import re
@@ -64,7 +80,7 @@ class OutFileContainer:
     
     def writeWarning(self, warn):
         if not self._file_warn:
-            self._file_warn = OutFile(self._path, 'warnings.txt')
+            self._file_warn = OutFile(self._path, 'warnings.csv')
         self._file_warn.writeCSV((warn))
     
     def writeProtein(self, protein_rec):
@@ -83,10 +99,10 @@ class OutFileContainer:
         outfile = self._files_pept[sample_name]
         outfile.writeCSV(peptide_rec)
     
-    def writeVariation(self, transcript_id, trn_var):
+    def writeVariation(self, transcript_id, trn_var, mode = None):
         if not self._file_var:
             self._file_var = OutFile(self._path, 'variations.csv')
-            self._file_var.writeCSV(('transcript_id', 'variation_id', 'beg', 'end', 'allele_id', 'sample', 'sample_allele_1', 'sample_allele_2', 'nonsynonymous', 'fshifts_before', 'prefix', 'allele', 'suffix', 'translation'))
+            self._file_var.writeCSV(('transcript_id', 'variation_id', 'beg', 'end', 'allele_id', 'sample', 'sample_allele_1', 'sample_allele_2', 'synonymous', 'fshifts_before', 'prefix_alleles', 'prefix', 'allele', 'suffix', 'suffix_alleles', 'translation'))
         outfile = self._file_var
         
         var_id = trn_var.id
@@ -95,18 +111,28 @@ class OutFileContainer:
         trn_alleles = trn_var.getTrnAlleles()
         
         for trn_allele_id in trn_alleles:
-            nonsyn = 0
+            syn = 'y'
             if trn_var.isNonSynonymous(trn_allele_id):
-                nonsyn = 1
+                syn = 'n'
+            if mode:
+                if mode == 'used' and syn == 'y':
+                    continue
+            else:
+                syn = '?'
+            wrote_data = set() # some variations have multiple repeated records because of suffix features and several samples
             for trn_allele in trn_alleles[trn_allele_id]:
                 prefix = trn_allele.prefix
                 suffix = trn_allele.suffix
+                allele_seq = trn_allele.allele.seq[::-1] if trn_var.strand == '-' else trn_allele.allele.seq
                 if prefix.sample == suffix.sample and trn_allele.allele.getSample(prefix.sample): # a sample allele must be in the native context!!!
-                    prefix_fsh = []
-                    for fshift in prefix.getFShiftPathSet():
-                        prefix_fsh.append(fshift.id)
-                    
-                    outfile.writeCSV((transcript_id, var_id, str(beg), str(end), trn_allele.id, prefix.sample.name, str(prefix.sample.allele_1), str(prefix.sample.allele_2), str(nonsyn), ';'.join(prefix_fsh), prefix.seq, trn_allele.allele.seq, suffix.seq, trn_allele.trn))
+                    prefix_fsh = '|'.join(fshift_id for fshift_id in prefix.getFShiftPathSet())
+                    prefix_var = '|'.join(prefix.getAllelesID())
+                    suffix_var = '|'.join(suffix.getAllelesID())
+                    data = (transcript_id, var_id, str(beg), str(end), trn_allele.id, prefix.sample.name, str(prefix.sample.allele_1), str(prefix.sample.allele_2), str(syn), prefix_fsh, prefix_var, prefix.seq, allele_seq, suffix.seq, suffix_var, trn_allele.trn)
+                    data_str = '_'.join(data)
+                    if data_str not in wrote_data:
+                        outfile.writeCSV(data)
+                        wrote_data.add(data_str)
     
     def close(self):
         for file in list(self._files_prot.values()):

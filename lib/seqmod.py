@@ -1,11 +1,30 @@
 #!/usr/bin/env python3
 
+# Copyright (C) 2017 D. Malko
+# This file is part of PeptoVar (Peptides on Variations): the program for personalization of protein coding genes and peptidomes generation.
+#
+# PeptoVar is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# PeptoVar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PeptoVar.  If not, see <http://www.gnu.org/licenses/>.
+
 import re
 from lib.seqtools import translate, complement
+
+# The package is used for debugging only
 
 class Seq:
     def __init__(self, strand, beg, end, seq):
         self._seq = list(seq)
+        self._ins = list() # insertion at the begin of exon
         self.strand = strand
         self.beg = beg
         self.end = end
@@ -23,18 +42,30 @@ class Seq:
             if len(seq) != llen:
                 print("ERROR: wrong allele_seq length {}..{}".format(lbeg, lend))
                 exit()
+        elif llen == 0:
+            if lend < 0:
+                self._ins = list(seq)
+            else:
+                self._seq[lend] = list(self._seq[lend] + seq)
+            return None
         else:
             print("ERROR: seq.beg > seq.end {}..{}".format(lbeg, lend))
             exit()
         
         for i in range(len(seq)):
-            if self._seq[lbeg + i] != '-': # some VCF files have wrong overlapped alleles
-                self._seq[lbeg + i] = seq[i]
+            if type(self._seq[lbeg + i]) is list: # there are insertions in the sequence
+                if self._seq[lbeg + i][0] != '-': # some VCF files have wrong overlapped alleles
+                    self._seq[lbeg + i][0] = seq[i]
+            else:
+                if self._seq[lbeg + i] != '-': # some VCF files have wrong overlapped alleles
+                    self._seq[lbeg + i] = seq[i]
+        return None
     
     def getSeq(self, beg = 0, end = None):
         seq = ''
         if end is None:
             end = len(self._seq)
+            seq = ''.join(self._ins)
         else:
             end += 1
         for nucl in self._seq[beg:end]:
@@ -67,26 +98,28 @@ class Sequence:
             if sample.id not in self._smplseq:
                 self._smplseq[sample.id] = []
             self._smplseq[sample.id].append(Seq(strand, beg, end, seq))
-            self._refseq.append(Seq(strand, beg, end, seq))
+        self._refseq.append(Seq(strand, beg, end, seq))
     
     def modify(self, snp):
         for sample in self.samples:
             for allele in snp.getSampleAlleles(sample):
+                allele_seq = complement(allele.seq) if snp.strand == '-' else allele.seq
                 if allele.isReference():
-                    for exseq in self._refseq:
-                        if exseq.beg <= snp.beg and snp.end <= exseq.end:
-                            lbeg = snp.beg - exseq.beg
-                            lend = snp.end - exseq.beg
-                            refseq = exseq.getSeq(lbeg, lend)
-                            if refseq.upper() != allele.seq:
-                                print("Oy Gevalt! Wrong reference allale!")
-                            break
+                    if allele_seq != '-':
+                        for exseq in self._refseq:
+                            if exseq.beg <= snp.beg and snp.end <= exseq.end:
+                                lbeg = snp.beg - exseq.beg
+                                lend = snp.end - exseq.beg
+                                refseq = exseq.getSeq(lbeg, lend)
+                                if refseq.upper() != allele_seq:
+                                    print("Oy Gevalt! Wrong reference allale!")
+                                break
                 else:
                     for exseq in self._smplseq[sample.id]:
                         if exseq.beg <= snp.beg and snp.end <= exseq.end:
                             lbeg = snp.beg - exseq.beg
                             lend = snp.end - exseq.beg
-                            exseq.setSeq(lbeg, lend, allele.seq)
+                            exseq.setSeq(lbeg, lend, allele_seq)
                             break
     
     def translate(self):

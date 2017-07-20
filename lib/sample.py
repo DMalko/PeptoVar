@@ -1,6 +1,21 @@
 #!/usr/bin/env python3
 
-import sys
+# Copyright (C) 2017 D. Malko
+# This file is part of PeptoVar (Peptides on Variations): the program for personalization of protein coding genes and peptidomes generation.
+#
+# PeptoVar is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# PeptoVar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PeptoVar.  If not, see <http://www.gnu.org/licenses/>.
+
 import operator
 
 class Sample:
@@ -17,7 +32,7 @@ class Sample:
         elif num == 2:
             self.allele_2 = 1
         else:
-            sys.exit("ERROR: wrong sample allele number \n")
+            raise ValueError("wrong sample allele number")
         self._setID()
     
     def _setID(self):
@@ -25,12 +40,12 @@ class Sample:
     
     def __or__(self, other):
         if self.name != other.name:
-            sys.exit("ERROR: wrong sample addition \n")
+            raise ValueError("wrong sample addition")
         return Sample(self.name, self.allele_1 | other.allele_1, self.allele_2 | other.allele_2)
     
     def __ior__(self, other):
         if self.name != other.name:
-            sys.exit("ERROR: wrong sample addition \n")
+            raise ValueError("wrong sample addition")
         return Sample(self.name, self.allele_1 | other.allele_1, self.allele_2 | other.allele_2)
     
     def __eq__(self, other): # self == other
@@ -50,7 +65,7 @@ class Sample:
     
     def __sub__(self, other): # self - other
         if self.name != other.name:
-            sys.exit("ERROR: wrong sample addition \n")
+            raise ValueError("wrong sample addition")
         if other.allele_1 and other.allele_2:
             return Sample(self.name, 0, 0)
         if self.allele_1 >= other.allele_1 and self.allele_2 >= other.allele_2:

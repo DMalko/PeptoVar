@@ -1,11 +1,25 @@
 #!/usr/bin/env python3
 
-import math
-import sys
+# Copyright (C) 2017 D. Malko
+# This file is part of PeptoVar (Peptides on Variations): the program for personalization of protein coding genes and peptidomes generation.
+#
+# PeptoVar is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# PeptoVar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PeptoVar.  If not, see <http://www.gnu.org/licenses/>.
+
 from copy import copy
 from lib.seqtools import translate, is_stopcodon
 
-DEBUG = 1
+DEBUG = 0
 
 class Peptide:
     def __init__(self, chrom, transcript_id, sample, fshifts, mtx, trn, beg, end, alleles):
@@ -21,7 +35,7 @@ class Peptide:
     
     def getTranslation(self, aa_length = None):
         if not len(self.matrix) or len(self.matrix) % 3:
-            sys.exit("ERROR: wrong peptide length - {}\n".format(self.matrix))
+            raise ValueError("wrong peptide length: {}".format(self.matrix))
         return (translate(self.matrix))[0]
     
     def appendAllele(self, allele, pos):
@@ -50,9 +64,6 @@ class Peptide:
         return self._strpos(self.end)
     
     def format(self):
-        fsh = []
-        for fshift in self.fshifts:
-            fsh.append(fshift.id)
         var = []
         for allele_id, pos in sorted(self.getAlleles().items(), key=lambda x: x[1]['beg']):
             allele_str = '({}..{}){}'.format(pos['beg'], pos['end'], allele_id)
@@ -62,7 +73,7 @@ class Peptide:
         if not len(var):
             var.append('-')
         
-        return [self.chrom, self.trn_id, self.sample.name, self.sample.allele_1, self.sample.allele_2, self.getBegPos(), self.getEndPos(), ';'.join(fsh), ';'.join(var), self.trn, self.mtx]
+        return [self.chrom, self.trn_id, self.sample.name, self.sample.allele_1, self.sample.allele_2, self.getBegPos(), self.getEndPos(), '|'.join(self.fshifts), '|'.join(var), self.trn, self.mtx]
 # end of Peptide
 
 class PeptideDriver:
@@ -106,6 +117,10 @@ class PeptideDriver:
     def appendNode(self, node):
         if self._len is not None:
             pos = node.getPos()
+            
+            if DEBUG and pos['pos'] == 154405021:
+                bp=1
+            
             # peptide position is determined as a "variation shadow" on the genome sequence
             if self._loc_pos == 0:
                 self._start_node = node
@@ -126,7 +141,8 @@ class PeptideDriver:
             self._end_node = node
             self._loc_pos += 1
             
-            self._mtx += node.nucl
+            if node.nucl != '-':
+                self._mtx += node.nucl
             mtx_len = len(self._mtx)
             trn_len = mtx_len / 3
             
@@ -168,6 +184,6 @@ class PeptideDriver:
             elif self._len > 0 and trn_len < self._len or self._len == 0:
                 return True
             else:
-                sys.exit("ERROR: wrong peptide length - {}\n".format(self._mtx))
+                raise ValueError("wrong peptide length: {}".format(self._mtx))
         return False
 # end of PeptideContainer

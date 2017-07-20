@@ -1,7 +1,22 @@
 #!/usr/bin/env python3
 
+# Copyright (C) 2017 D. Malko
+# This file is part of PeptoVar (Peptides on Variations): the program for personalization of protein coding genes and peptidomes generation.
+#
+# PeptoVar is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# PeptoVar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PeptoVar.  If not, see <http://www.gnu.org/licenses/>.
+
 import re
-import sys
 import os.path
 from operator import itemgetter
 from lib.fasta import Fasta
@@ -52,8 +67,7 @@ class Gff:
         elif os.path.isfile(gff_file + '3'):
             gff = open(gff_file + '3', 'r')
         else:
-            print("ERROR: no GFF file")
-            exit()
+            raise ValueError("no GFF file")
         
         for line in gff:
             pos += len(line)
@@ -63,7 +77,7 @@ class Gff:
                     if re.match("##FASTA", line):
                         gff.close()
                         self._sort_exons()
-                        self._fasta.appendFile(gff_file, pos)
+                        self._fasta.appendFasta(gff_file, pos)
                         return
                     elif not re.match("#", line):
                         line = line.rstrip()
@@ -76,7 +90,7 @@ class Gff:
                                         self._transcripts[pid] = []
                                     self._transcripts[pid].append(item)
                             else:
-                                print("WARNING: no 'Parent' attribute for CDS in locus {0} ({1}..{2}) ...skipped".format(item.chrom, item.beg, item.end))
+                                raise ValueError("no 'Parent' attribute for CDS in locus {} ({}..{})".format(item.chrom, item.beg, item.end))
         gff.close()
         self._sort_exons()
     
