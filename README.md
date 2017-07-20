@@ -81,7 +81,7 @@ This example illustrates usage virtual sample with all variations:
 
 Detailed documentation can be found at https://...
 
-If you haven't found the answer to your question in the docs, or have any suggestions concerning new features, feel free to create an issue here, on GitHub, or write an email to dmitry.malko at gmail.com .
+If you haven't found the answer to your question in the docs, or have any suggestions concerning new features, feel free to create an issue here, on GitHub, or write an email to dmitry.malko at gmail.com (![mymail](https://user-images.githubusercontent.com/5543031/28414580-07cff5aa-6d55-11e7-992f-0ba7fb4041fa.png)).
 
 ## Build
 
