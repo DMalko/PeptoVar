@@ -12,8 +12,7 @@ PeptoVar is a program for personalization of protein coding genes and peptidomes
    - personalized for selected sample
    - unique peptides for pair of samples
    - all possible peptides for variations in population
-   - *... multi-processing version will be available soon*
-   
+
 - Translate variation with prefixes and suffixes:
    - determine variation synonymy
    - create translation dependencies
@@ -36,7 +35,7 @@ PeptoVar is a program for personalization of protein coding genes and peptidomes
 * unzip the archive
 * add resulting folder to your ``PATH`` variable
   * or add symbolic link for ``PeptoVar`` script to your ``bin`` folder
-  * or use peptoVar directly by specifying full path to the executable script
+  * or use PeptoVar directly by specifying full path to the executable script
 
 ## Usage
 
@@ -45,7 +44,7 @@ This example illustrates usage for sample SAMPLE01:
 
     PeptoVar -samples SAMPLE01 -peptlen 9 -var used -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
     
-OR
+or
     
     PeptoVar -samples SAMPLE01 -peptlen 9 -var used -indir ./testdata
 
@@ -55,7 +54,7 @@ This example illustrates usage for the pair of samples: SAMPLE01 and SAMPLE02:
 
     PeptoVar -samples SAMPLE01 SAMPLE02 -peptlen 9 -var used -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
     
-OR
+or
     
     PeptoVar -samples SAMPLE01 SAMPLE02 -peptlen 9 -var used -indir ./testdata
 
@@ -65,7 +64,7 @@ This example illustrates usage virtual sample with all variations:
 
     PeptoVar -peptlen 9 -var used -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
     
-OR
+or
     
     PeptoVar -peptlen 9 -var used -indir ./testdata
     
