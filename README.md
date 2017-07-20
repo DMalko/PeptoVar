@@ -6,31 +6,31 @@ PeptoVar - **Pept**ides **o**f **Var**iations
 
 PeptoVar is a program for personalization of protein coding genes and peptidomes generation.
 
- - Easy to use (see *Usage* section) 
+ - Easy to use (see *Usage* section).
  
  - Generate peptidomes:
    - personalized for selected sample
    - unique peptides for pair of samples
    - all possible peptides for variations in population
    - *... multi-processing version will be available soon*
+   
+- Translate variation with prefixes and suffixes:
+   - determine variation synonymy
+   - create translation dependencies
 
-- Efficiently remove synonymous variations
+- Has optional parameters for variation filtration and transcript selection.
 
-- Has optional parameters for variation filtration and transcript selection
+## Requirements
 
+* Linux or MacOS
+* python >= 3.5
+* pysam module >= 0.11.2.2
 
-## Installation / Download
+## Installation
 
-#### Using Homebrew on Mac OS X or Linux (linuxbrew)
+* install pysam package using pip:
 
-    *... will be available soon*
-    
-to upgrade already installed PeptoVar to the newest version:
-
-    brew update
-    brew upgrade PeptoVar
-
-#### Manual install
+   pip3 install pysam
 
 * download latest stable PeptoVar build from [release page](https://github.com/DMalko/PeptoVar/releases/latest)
 * unzip the archive
@@ -38,74 +38,44 @@ to upgrade already installed PeptoVar to the newest version:
   * or add symbolic link for ``PeptoVar`` script to your ``bin`` folder
   * or use peptoVar directly by specifying full path to the executable script
 
-#### Requirements
-
-* Linux or MacOS
-* python >= 3.5
-* pysam module >= 0.11.2.2
- 
 ## Usage
 
 #### Peptides for a sample
-
 This example illustrates usage for sample SAMPLE01:
 
-    peptoVar -samples S00001 -peptlen 9 -var used -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
+    PeptoVar -samples SAMPLE01 -peptlen 9 -var used -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
     
-    OR
+OR
     
-    peptoVar -samples S00001 -peptlen 9 -var used -indir ./testdata
+    PeptoVar -samples SAMPLE01 -peptlen 9 -var used -indir ./testdata
 
 
 #### Unique peptides for a pair of samples
 This example illustrates usage for the pair of samples: SAMPLE01 and SAMPLE02:
 
-    peptoVar -samples S00001 S00002 -peptlen 9 -var used -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
+    PeptoVar -samples SAMPLE01 SAMPLE02 -peptlen 9 -var used -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
     
-    OR
+OR
     
-    peptoVar -samples S00001 S00002 -peptlen 9 -var used -indir ./testdata
+    PeptoVar -samples SAMPLE01 SAMPLE02 -peptlen 9 -var used -indir ./testdata
 
 
 #### Generation of peptides using all possible variations in the set
 This example illustrates usage virtual sample with all variations:
 
-    peptoVar -peptlen 9 -var used -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
+    PeptoVar -peptlen 9 -var used -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
     
-    OR
+OR
     
-    peptoVar -peptlen 9 -var used -indir ./testdata
+    PeptoVar -peptlen 9 -var used -indir ./testdata
     
 
 ## Documentation
 
 Detailed documentation can be found at https://...
 
-If you haven't found the answer to your question in the docs, or have any suggestions concerning new features, feel free to create an issue here, on GitHub, or write an email to:
+If you haven't found the answer to your question in the docs, or have any suggestions concerning new features, feel free to create an issue here, on GitHub, or write an email to dmitry.malko at gmail.com:
 <br />![my mail](https://user-images.githubusercontent.com/5543031/28415000-8bea641e-6d56-11e7-85ca-4287500a4192.png)
-
-## Build
-
-Dependancy:
-
-- pysam module
-
-To build PeptoVar from source:
-
-- Clone repository
-
-  ```
-  git clone https://github.com/DMalko/peptoVar/PeptoVar.git
-  ```
-
-- Refresh git submodules
-
-  ```
-  git submodule update --init --recursive
-  ```
-  
-- That is all. To generate peptide you need genome annotation in GFF format and VCF file with index. (... from ENSEMBL).
-
 
 ## License
 Copyright (c) 2017, D. Malko
