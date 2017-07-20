@@ -9,8 +9,8 @@ PeptoVar is a program for personalization of protein coding genes and peptidomes
  - Easy to use (see *Usage* section).
  
  - Generate peptidomes:
-   - personalized for selected sample
-   - unique peptides for pair of samples
+   - personalized for a sample
+   - unique peptides for a pair of samples
    - all possible peptides for variations in population
 
 - Translate variation with prefixes and suffixes:
@@ -71,7 +71,7 @@ or
 
 ## Documentation
 
-Detailed documentation can be found at [https://github.com/DMalko/PeptoVar/UserManual.pdf](https://github.com/DMalko/PeptoVar/UserManual.pdf)
+Detailed algorithm description can be found in [UserManual](https://github.com/DMalko/PeptoVar/UserManual.pdf)
 
 If you haven't found the answer to your question in the docs, or have any suggestions concerning new features, feel free to create an issue here, on GitHub, or write an email to dmitry.malko at gmail.com:
 <br />![my mail](https://user-images.githubusercontent.com/5543031/28415000-8bea641e-6d56-11e7-85ca-4287500a4192.png)
@@ -100,4 +100,4 @@ has not published yet
 ## Files referenced in original paper
 
 Algorithm description and user manual: [https://github.com/DMalko/PeptoVar/UserManual.pdf](https://github.com/DMalko/PeptoVar/UserManual.pdf)
-.
+
