@@ -48,21 +48,33 @@ to upgrade already installed PeptoVar to the newest version:
 
 #### Peptides for a sample
 
-This example illustrates usage for sample S00001:
+This example illustrates usage for sample SAMPLE01:
 
-    peptoVar -samples S00001 -peptlen 9 -var nonsyn -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
+    peptoVar -samples S00001 -peptlen 9 -var used -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
+    
+    OR
+    
+    peptoVar -samples S00001 -peptlen 9 -var used -indir ./testdata
 
 
 #### Unique peptides for a pair of samples
-This example illustrates usage for the pair of samples S00001 and S00002:
+This example illustrates usage for the pair of samples: SAMPLE01 and SAMPLE02:
 
-    peptoVar -samples S00001 S00002 -peptlen 9 -var nonsyn -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
+    peptoVar -samples S00001 S00002 -peptlen 9 -var used -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
+    
+    OR
+    
+    peptoVar -samples S00001 S00002 -peptlen 9 -var used -indir ./testdata
 
 
 #### Generation of peptides using all possible variations in the set
 This example illustrates usage virtual sample with all variations:
 
-    peptoVar -peptlen 9 -var nonsyn -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
+    peptoVar -peptlen 9 -var used -gff ./testdata/test.gff -vcf ./testdata/test.vcf.gz
+    
+    OR
+    
+    peptoVar -peptlen 9 -var used -indir ./testdata
     
 
 ## Documentation
