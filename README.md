@@ -1,4 +1,3 @@
-![icon](https://user-images.githubusercontent.com/5543031/28422412-9ae40708-6d70-11e7-97f0-64be5f22877a.png)
 # PeptoVar
 
 PeptoVar - **Pept**ides **o**f **Var**iations
