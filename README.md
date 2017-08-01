@@ -4,7 +4,7 @@ PeptoVar - **Pept**ides **o**f **Var**iations
 
 ## Overview
 
-PeptoVar is a program for personalization of protein coding genes and peptidomes generation.
+PeptoVar is a program for personalization of protein coding genes and population-wide peptidome generation.
 
  - Easy to use (see *Usage* section).
  

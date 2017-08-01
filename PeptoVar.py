@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Copyright (C) 2017 D. Malko
-# This file is part of PeptoVar (Peptides on Variations): the program for personalization of protein coding genes and peptidomes generation.
+# This file is part of PeptoVar (Peptides on Variations): the program for personalization of protein coding genes and population-wide peptidome generation.
 #
 # PeptoVar is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -47,12 +47,12 @@ def main():
     total_tr = 0
     cprint = ColorPrint()
     
-    input_parser = argparse.ArgumentParser(description='PeptoVar - Peptides on Variations: the program for personalization of protein coding genes and peptidomes generation.')
+    input_parser = argparse.ArgumentParser(description='PeptoVar - Peptides on Variations: the program for personalization of protein coding genes and population-wide peptidome generation.')
     input_parser.add_argument('-gff', metavar='file.gff', default=None, help='GFF input file', required=False)
     input_parser.add_argument('-fasta', metavar='file.fasta', default=None, help='FASTA input file', required=False)
     input_parser.add_argument('-vcf', metavar='file.vcf.gz', default=None, help='bgzip-compressed VCF input file (need an index file)', required=False)
     input_parser.add_argument('-tmpdir', metavar='dirpath', default=None, help='TEMP directory', required=False)
-    input_parser.add_argument('-samples', metavar='name', nargs='+', default=list(), help='sample name or pair of names in VCF file; for two samples (donor/recipient) only unique peptides will be represented)', required=False)
+    input_parser.add_argument('-samples', metavar='name', nargs='+', default=list(), help='a sample name or a pair of names in VCF file; for two samples (donor/recipient) only unique peptides will be represented)', required=False)
     input_parser.add_argument('-minaf', metavar='THRESHOLD', type=float, default=0, help='allele frequency (AF) threshold; alleles with AF < THRESHOLD will be ignored (AF=0 will be set for alleles with no data)', required=False)
     input_parser.add_argument('-var', metavar='all | used', choices=['all', 'used'], help='save translated polymorphisms (all or only used to make peptides)', required=False)
     input_parser.add_argument('-nopt', action='store_false', default=True, help='do not use optimization (may cause high CPU load and memory usage)')

@@ -87,7 +87,7 @@ class OutFileContainer:
         sample_name = protein_rec[2]
         if sample_name not in self._files_prot:
             self._files_prot[sample_name] = OutFile(self._path, sample_name + '.prot.csv')
-            self._files_prot[sample_name].writeCSV(('chrom', 'transcript_id', 'sample', 'allele1', 'allele2', 'beg', 'end', 'variations(positions_in_matrix)', 'protein', 'matrix'))
+            self._files_prot[sample_name].writeCSV(('chrom', 'transcript_id', 'sample', 'sample_allele1', 'sample_allele2', 'beg', 'end', 'variations(positions_in_matrix)', 'protein', 'matrix'))
         outfile = self._files_prot[sample_name]
         outfile.writeCSV(protein_rec[0:6] + protein_rec[7:])
     
@@ -95,14 +95,14 @@ class OutFileContainer:
         sample_name = peptide_rec[2]
         if sample_name not in self._files_pept:
             self._files_pept[sample_name] = OutFile(self._path, sample_name + '.pept.csv')
-            self._files_pept[sample_name].writeCSV(('chrom', 'transcript_id', 'sample', 'allele1', 'allele2', 'beg', 'end', 'fshifts_before', 'variations(positions_in_matrix)', 'peptide', 'matrix'))
+            self._files_pept[sample_name].writeCSV(('chrom', 'transcript_id', 'sample', 'sample_allele1', 'sample_allele2', 'beg', 'end', 'upstream_fshifts', 'variations(positions_in_matrix)', 'peptide', 'matrix'))
         outfile = self._files_pept[sample_name]
         outfile.writeCSV(peptide_rec)
     
     def writeVariation(self, transcript_id, trn_var, mode = None):
         if not self._file_var:
             self._file_var = OutFile(self._path, 'variations.csv')
-            self._file_var.writeCSV(('transcript_id', 'variation_id', 'beg', 'end', 'allele_id', 'sample', 'sample_allele_1', 'sample_allele_2', 'synonymous', 'fshifts_before', 'prefix_alleles', 'prefix', 'allele', 'suffix', 'suffix_alleles', 'translation'))
+            self._file_var.writeCSV(('transcript_id', 'variation_id', 'beg', 'end', 'allele_id', 'sample', 'sample_allele_1', 'sample_allele_2', 'synonymous', 'upstream_fshifts', 'prefix_alleles', 'prefix', 'allele', 'suffix', 'suffix_alleles', 'translation'))
         outfile = self._file_var
         
         var_id = trn_var.id
