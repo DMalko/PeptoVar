@@ -71,7 +71,7 @@ or
 
 ## Documentation
 
-Detailed PeptoVar description can be found in the [manual](https://github.com/DMalko/PeptoVar/UserManual.pdf)
+Detailed PeptoVar description can be found in the [manual](https://github.com/DMalko/peptovar/blob/master/UserManual.pdf)
 
 If you haven't found the answer to your question in the docs, or have any suggestions concerning new features, feel free to create an issue here, on GitHub, or write an email to dmitry.malko at gmail.com:
 <br />![my mail](https://user-images.githubusercontent.com/5543031/28415000-8bea641e-6d56-11e7-85ca-4287500a4192.png)
