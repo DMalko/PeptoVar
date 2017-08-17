@@ -1,6 +1,20 @@
 #!/usr/bin/env python3
 
-import sys
+# Copyright (C) 2017 D. Malko
+# This file is part of PeptoVar (Peptides on Variations): the program for personalization of protein coding genes and population-wide peptidome generation.
+#
+# PeptoVar is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# PeptoVar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PeptoVar.  If not, see <http://www.gnu.org/licenses/>.
 
 codontable = {
     'ATA':'I', 'ATC':'I', 'ATT':'I', 'ATG':'M',
@@ -72,7 +86,6 @@ class PeptComparator:
     def getRefNotInAlt(self, length = None):
         pept = {}
         if length and (length not in self.refpept or length not in self.altpept):
-            #sys.exit("ERROR: wrong length: {}".format(length))
             return pept
         for peptlen in self.refpept:
             if length and peptlen != length:
@@ -88,7 +101,6 @@ class PeptComparator:
     def getAltNotInRef(self, length = None):
         pept = {}
         if length and (length not in self.refpept or length not in self.altpept):
-            #sys.exit("ERROR: wrong length: {}".format(length))
             return pept
         for peptlen in self.refpept:
             if length and peptlen != length:

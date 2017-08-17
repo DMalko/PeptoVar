@@ -1,6 +1,21 @@
 #!/usr/bin/env python3
 
-import sys
+# Copyright (C) 2017 D. Malko
+# This file is part of PeptoVar (Peptides on Variations): the program for personalization of protein coding genes and population-wide peptidome generation.
+#
+# PeptoVar is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# PeptoVar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PeptoVar.  If not, see <http://www.gnu.org/licenses/>.
+
 import weakref
 from lib.seqtools import translate
 from lib.sample import SampleContainer
@@ -16,7 +31,7 @@ class Node:
         self._allele_id = allele.id if allele else 'ref'
         self._alleles = [allele] if allele else [] # alleles of variations
         self._is_fshift = True if allele and allele.isInDel() else False # True if the node belongs to a frameshift
-        self._fshift_path = uContainer() # sets of alleles with frameshifts BEFORE the node
+        self._fshift_path = {}
         self._is_used = False # True if the node has been used
         self._prefix_seq = set()
         self._samples = SampleContainer()
@@ -48,9 +63,15 @@ class Node:
     
     def appendAllele(self, allele):
         if not self._is_ref: # an alternative (not reference) allele has only one allele_id
-            sys.exit("ERROR: wrong allele ID for node in pos: {}\n".format(self.pos))
+            raise ValueError("wrong allele ID for node in pos: {}".format(self.pos))
         self._alleles.append(allele)
         self.appendSamples(allele.getSamples())
+        if allele.isFrameShift():
+            self._is_fshift = True
+        if self._allele_id == 'ref':
+            self._allele_id = allele.id
+        else:
+            self._allele_id += ',' + allele.id
         return len(self._alleles)
     
     def getAlleleID(self):
@@ -68,7 +89,7 @@ class Node:
     def isReference(self):
         return self._is_ref
     
-    def getSample(self, sample):
+    def getSample(self, sample = None):
         return self._samples.getSample(sample)
     
     def getPrefixSeq(self, prefix_seq):
@@ -81,7 +102,7 @@ class Node:
             next_nodes = []
             for next_node in self._next:
                 if next_node.getSample(sample):
-                    if pefix_seq and len(self._next) > 1: # check prefix if branches exist
+                    if pefix_seq != None and len(self._next) > 1: # check prefix if branches exist
                         if next_node.getPrefixSeq(pefix_seq):
                             next_nodes.append(next_node)
                     else:
@@ -103,10 +124,17 @@ class Node:
         return self._is_used
     
     def appendFShiftPath(self, fshift_path):
-        return self._fshift_path.append(fshift_path)
+        if fshift_path.sample_id not in self._fshift_path:
+            self._fshift_path[fshift_path.sample_id] = set()
+        if fshift_path.id not in self._fshift_path[fshift_path.sample_id]:
+            self._fshift_path[fshift_path.sample_id].add(fshift_path.id)
+            return True
+        return False
     
     def getFShiftPathSet(self, sample):
-        return  self._fshift_path.get(sample)
+        if sample.id in self._fshift_path:
+            return self._fshift_path[sample.id]
+        return set()
     
     def isFrameShift(self):
         return self._is_fshift
@@ -126,9 +154,11 @@ class Vertebra:
         self.pos = pos
         self._ref_node = Node(pos, 0, nucl)
         self._nodes = [] # nodes in the graph
-        self._next = None # the next vertebra in a backbone
+        self._next = None # the next item in the backbone
+        self._before = None # the previous item in the backbone
         self._prefixes = uContainer() # prefixes (CodonPrefix objects) to build the first codons for variation alleles
         self._samples = SampleContainer()
+        self._alt_allele_samples = SampleContainer()
         self._all_samples = samples
     
     def appendSample(self, sample):
@@ -143,43 +173,73 @@ class Vertebra:
     def getPrefixes(self, sample):
         prefixes = self._prefixes.get(sample)
         if not len(prefixes):
-            sys.exit("ERROR: no prefix in position: {}\n".format(self.pos))
+            raise ValueError("no prefix in position: {}".format(self.pos))
         return prefixes
     
     def getSuffixes(self, sample):
         suffixes = []
-        nodes = self._nodes
-        if len(nodes):
-            for node1 in nodes:
+        nodes1 = self._nodes
+        while len(nodes1):
+            new_nodes1 = []
+            empty_suffix1 = False
+            for node1 in nodes1:
                 if not node1.getSample(sample):
                     continue
-                if len(node1.getNext(sample)):
-                    for node2 in node1.getNext(sample):
+                if node1.nucl == '-':
+                    next_nodes1 = node1.getNext(sample)
+                    if len(next_nodes1):
+                        new_nodes1.extend(next_nodes1)
+                    else:
+                        if not empty_suffix1:
+                            suffixes.append(CodonSuffix(sample, [Node(0, 0, 'N'), Node(0, 0, 'N')]))
+                            empty_suffix1 = True
+                    continue
+                nodes2 = node1.getNext(sample)
+                while len(nodes2):
+                    new_nodes2 = []
+                    empty_suffix2 = False
+                    for node2 in nodes2:
+                        if node2.nucl == '-':
+                            next_nodes2 = node2.getNext(sample)
+                            if len(next_nodes2):
+                                new_nodes2.extend(next_nodes2)
+                            else:
+                                if not empty_suffix2:
+                                    suffixes.append(CodonSuffix(sample, [node1, Node(0, 0, 'N')]))
+                                    empty_suffix2 = True
+                            continue
                         suffixes.append(CodonSuffix(sample, [node1, node2]))
-                else:
-                    suffixes.append(CodonSuffix(sample, [node1, Node(0, 0, 'N')]))
-        else:
+                    nodes2 = new_nodes2
+            nodes1 = new_nodes1
+        if not len(suffixes):
             suffixes.append(CodonSuffix(sample, [Node(0, 0, 'N'), Node(0, 0, 'N')]))
         return suffixes
     
     def addNodeToGraph(self, node = None): # add alleles to the graph
         if node: # add the variation to the graph
-            if node.isReference() and not len(node.getNext()) and self._next:
-                node.setNext(self._next.getNodes())
-            node.setVertebra(self)
             if not node.isInGraph():
+                if node.isReference():
+                    if self._next:
+                        node.setNext(self._next.getNodes())
+                elif self._all_samples[0].name != 'virtual':
+                    for node_sample in node.getSample():
+                        if self._alt_allele_samples.getSample(node_sample):
+                            raise ValueError("ambiguous variation")
+                        else:
+                            self._alt_allele_samples.appendSample(node_sample)
+                    
                 node.setInGraph()
+                node.setVertebra(self)
                 self._nodes.append(node)
         else: # add the reference allele to the graph if no alternatives
             node = self._ref_node
-            if not len(self._nodes) and not len(node.getNext()): # if reference not in the graph
+            if not node.isInGraph() and not len(self._nodes): # if reference not in the graph
                 if self._next:
                     node.setNext(self._next.getNodes())
+                node.setInGraph()
                 node.setVertebra(self)
                 node.appendSamples(self._all_samples)
-                if not node.isInGraph():
-                    node.setInGraph()
-                    self._nodes.append(node)
+                self._nodes.append(node)
         return None
     
     def getRefNode(self):
@@ -188,12 +248,23 @@ class Vertebra:
     def getNodes(self):
         return self._nodes
     
-    def setNext(self, vertebra):
-        self._next = vertebra
+    def setNext(self, item):
+        self._next = item
+    
+    def setBefore(self, item):
+        self._before = item
     
     def getNext(self):
         return self._next
+    
+    def getBefore(self):
+        return self._before
 # end of Vertebra
+
+class Fibro(Vertebra):
+    def __init__(self, pos, samples):
+        super().__init__(pos + 0.5, '-', samples)
+# end of Fibro    
 
 class Codon:
     def __init__(self, nodes):
@@ -207,7 +278,7 @@ class CodonPrefix:
         self.id = "-"
         self.seq = ""
         self.sample = sample
-        self._fsh_path_set = []
+        self._fsh_path_set = set()
         self.nodes = nodes
         if len(nodes):
             self.id = "-".join(str(id(node)) for node in nodes)
@@ -218,10 +289,15 @@ class CodonPrefix:
         self._fsh_path_set = node.getFShiftPathSet(self.sample)
         
     def getAllelesID(self):
-        ids = set()
-        for node in nodes:
+        ids = []
+        for node in self.nodes:
             for allele in node.getAlleles():
-                ids.add(allele.id)
+                if not allele.isNonSyn():
+                    allele_id = '[' + allele.id + ']'
+                else:
+                    allele_id = allele.id
+                if allele_id not in ids:
+                    ids.append(allele_id)
         return ids
         
     def getFShiftPathSet(self):
@@ -269,39 +345,30 @@ class uContainer:
 # end of uContainer
 
 class FShiftPath:
-    def __init__(self, sample):
-        self.id = "-"
-        self.sample = sample
-        self._path = []
+    def __init__(self, sample_id, path_id = '-'):
+        self.id = path_id
+        self.sample_id = sample_id
     
-    def appendAlleleID(self, allele_id):
-        if len(self._path):
-            if self._path[-1] != allele_id:
-                self._path.append(allele_id)
-                self.id += "," + allele_id
+    def appendAlleleID(self, allele_id_set):
+        set_id = ",".join(allele_id_set)
+        if self.id != "-":
+            if not self.id.endswith(set_id):
+                self.id += "," + set_id
                 return True
-            else:
-                return False
+            return False
         else:
-            self._path.append(allele_id)
-            self.id = allele_id
+            self.id = set_id
             return True
     
-    def setPath(self, path_id, path):
-        self.id = path_id
-        self._path = path
-    
     def clonePath(self):
-        cloned_path = FShiftPath(self.sample)
-        cloned_path.setPath(self.id, self._path)
-        return cloned_path
+        return FShiftPath(self.sample_id, self.id)
     
     def checkConsistency(self):
         checker = set()
-        for allele_id in self._path:
+        for allele_id in self.id.split(","):
             if allele_id in checker:
-                return False
+                return allele_id
             else:
                 checker.add(allele_id)
-        return True
+        return None
 # end of FShiftPath
