@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-# Copyright (C) 2017 D. Malko
-# This file is part of PeptoVar (Peptides on Variations): the program for personalization of protein coding genes and population-wide peptidome generation.
+# Copyright (C) 2017 Dmitry Malko
+# This file is part of PeptoVar (Peptides of Variations): the program for personalized and population-wide peptidome generation.
 #
 # PeptoVar is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -42,6 +42,10 @@ class UniPep:
         
         self._con = sqlite3.connect(self._filename)
         self._cur = self._con.cursor()
+        
+        self._cur.execute("PRAGMA page_size = 65536")
+        self._cur.execute("PRAGMA max_page_count = 2147483646")
+        
         self._cur.execute("CREATE TABLE pept1 (chrom TEXT NOT NULL, transcript_id TEXT NOT NULL, sample TEXT NOT NULL, allele1 integer NOT NULL, allele2 integer NOT NULL, beg INTEGER NOT NULL, end INTEGER NOT NULL, fshifts TEXT NOT NULL, snp TEXT NOT NULL, peptide TEXT, matrix TEXT NOT NULL)")
         #self._cur.execute("CREATE INDEX peptide1 ON pept1 (peptide)")
         self._cur.execute("CREATE TABLE pept2 (chrom TEXT NOT NULL, transcript_id TEXT NOT NULL, sample TEXT NOT NULL, allele1 integer NOT NULL, allele2 integer NOT NULL, beg INTEGER NOT NULL, end INTEGER NOT NULL, fshifts TEXT NOT NULL, snp TEXT NOT NULL, peptide TEXT, matrix TEXT NOT NULL)")
@@ -61,11 +65,23 @@ class UniPep:
     
     def getUnique(self, sample_name):
         self._cur.execute(self.names[sample_name]['unique'])
-        return self._cur.fetchall()
+        #return self._cur.fetchall()
+        while True:
+            rows = self._cur.fetchmany(1000)
+            if not rows:
+                return None
+            yield rows
+        return None
     
     def getAll(self, sample_name):
         self._cur.execute(self.names[sample_name]['allpep'])
-        return self._cur.fetchall()
+        #return self._cur.fetchall()
+        while True:
+            rows = self._cur.fetchmany(1000)
+            if not rows:
+                return None
+            yield rows
+        return None
     
     def close(self):
         self._con.close()

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-# Copyright (C) 2017 D. Malko
-# This file is part of PeptoVar (Peptides on Variations): the program for personalization of protein coding genes and population-wide peptidome generation.
+# Copyright (C) 2017 Dmitry Malko
+# This file is part of PeptoVar (Peptides of Variations): the program for personalized and population-wide peptidome generation.
 #
 # PeptoVar is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -53,6 +53,7 @@ def main():
     input_parser.add_argument('-vcf', metavar='file.vcf.gz', default=None, help='bgzip-compressed VCF input file (need an index file)', required=False)
     input_parser.add_argument('-tmpdir', metavar='dirpath', default=None, help='TEMP directory', required=False)
     input_parser.add_argument('-samples', metavar='name', nargs='+', default=list(), help='a sample name or a pair of sample names in VCF file; for two samples (donor/recipient) only unique peptides will be represented)', required=False)
+    input_parser.add_argument('-tagaf', metavar='TAG_AF', default='AF', help='allele frequency tag in VCF file (for example: EUR_AF, SAS_AF, AMR_AF etc.); use with `-minaf` argument, default=AF', required=False)
     input_parser.add_argument('-minaf', metavar='THRESHOLD', type=float, default=0, help='allele frequency (AF) threshold; alleles with AF < THRESHOLD will be ignored (AF=0 will be set for alleles with no data)', required=False)
     input_parser.add_argument('-var', metavar='all | used', choices=['all', 'used'], help='save translated polymorphisms (all or only used to make peptides)', required=False)
     input_parser.add_argument('-nopt', action='store_false', default=True, help='do not use optimization (may cause high CPU load and memory usage)')
@@ -73,6 +74,7 @@ def main():
     save_var = args.var
     optimization = args.nopt
     min_af = args.minaf
+    tag_af = args.tagaf
     trnlist = args.trnlist
     trnfile = args.trnfile
     pept_len = args.peptlen
@@ -88,13 +90,21 @@ def main():
     peptdb = None
     protdb = None
     
-    if tmp_dir and not os.path.exists(tmp_dir):
-        try:
-            os.makedirs(tmp_dir)
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                cprint.printFail("\nCan't create a temporary directory!\n")
-            
+    if not min_af:
+        cprint.printWarning("\nLow value of -minaf argument can cause high memory usage and increasing computational time!\n")
+    
+    tmpdir_created = 0
+    if tmp_dir:
+        if not os.path.exists(tmp_dir):
+            try:
+                os.makedirs(tmp_dir)
+            except OSError as e:
+                if e.errno != errno.EEXIST:
+                    cprint.printFail("\nCan't create a temporary directory!\n")
+                    exit()
+            tmpdir_created = 1
+        os.environ["TMPDIR"] = tmp_dir
+        os.environ["SQLITE_TMPDIR"] = tmp_dir
     
     for plength in pept_len:
         if plength < 0:
@@ -132,7 +142,7 @@ def main():
     
     if len(samples) == 0:
         samples.append('virtual')
-        cprint.printWarning('MODE: virtual sample')
+        cprint.printWarning('MODE: population')
         peptdb = UniPep(samples[0], '-', tmp_dir)
         protdb = UniPep(samples[0], '-', tmp_dir)
     elif len(samples) == 1:
@@ -249,7 +259,7 @@ def main():
                             continue
                         
                         try:
-                            snp = SNP(var, samples, optimization)
+                            snp = SNP(var, samples, optimization, tag_af)
                         except ValueError as err:
                             cprint.printWarning("{} - {} ...skipped".format(var.id, err.args[0]))
                             outfiles.writeWarning([var.id, err.args[0], "skipped"])
@@ -341,7 +351,9 @@ def main():
             else:
                 output = peptdb.getAll(sample)
             for rec in output:
-                outfiles.writePeptide(rec)
+                if not rec: break
+                for row in rec:
+                    outfiles.writePeptide(row)
         peptdb.close()
     
     if do_prot:
@@ -353,7 +365,9 @@ def main():
             else:
                 output = protdb.getAll(sample)
             for rec in output:
-                outfiles.writeProtein(rec)
+                if not rec: break
+                for row in rec:
+                    outfiles.writeProtein(row)
         protdb.close()
     
     notfound = set()
@@ -367,7 +381,7 @@ def main():
     
     stop_time = time.time()
     cprint.printOk("...the job is done (execution time: {})".format(time.strftime("%H:%M:%S", time.gmtime(stop_time - start_time))))
-    if tmp_dir and os.path.exists(tmp_dir):
+    if tmpdir_created and os.path.exists(tmp_dir):
         try:
             shutil.rmtree(tmp_dir)
         except:
